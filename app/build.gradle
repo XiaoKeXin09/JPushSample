@@ -1,0 +1,87 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion build_versions.target_sdk
+    buildToolsVersion build_versions.build_tools
+
+    defaultConfig {
+        applicationId "com.xuexiang.jpushsample"
+        minSdkVersion 17
+        targetSdkVersion build_versions.target_sdk
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        multiDexEnabled true
+        vectorDrawables.useSupportLibrary = true
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [moduleName: project.getName()]
+            }
+        }
+
+        manifestPlaceholders = [
+                JPUSH_PKGNAME: defaultConfig.applicationId,
+                JPUSH_APPKEY : "544a42c7e024a6b4c20fdc6c",//值来自开发者平台取得的AppKey
+                JPUSH_CHANNEL: "default_developer",
+        ]
+    }
+
+    signingConfigs {
+        release {
+            storeFile file("./debug.jks")
+            storePassword "123456"
+            keyAlias "debug"
+            keyPassword "123456"
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+        debug {
+            debuggable true
+            minifyEnabled false
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    testImplementation deps.junit
+    androidTestImplementation deps.runner
+    androidTestImplementation deps.espresso.core
+
+    //远程依赖
+    implementation project(path: ':jpush-remote')
+
+    implementation deps.androidx.multidex
+    //屏幕适配AutoSize
+    implementation 'me.jessyan:autosize:1.1.2'
+    //美团多渠道打包
+    implementation 'com.meituan.android.walle:library:1.1.6'
+
+    //RxJava
+    implementation deps.rxjava2
+    implementation deps.rx_android
+    implementation 'com.github.xuexiangjys:RxUtil2:1.1.5'
+}
+
+//x-library依赖脚本
+apply from: 'x-library-simple.gradle'
+//walle多渠道打包
+apply from: 'multiple-channel.gradle'
+

@@ -1,0 +1,1 @@
+include ':app', ':jpush-local', ':jpush-remote'
